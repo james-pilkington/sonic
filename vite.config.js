@@ -1,5 +1,7 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-    base: "./sonic/",
+    build: { outDir: '..' },
+  // needed for github pages just put the repo name here
+  base: '/sonic/', 
 });
