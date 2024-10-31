@@ -31,6 +31,6 @@ export function makeSonic(pos) {
         k.color(255,255,0),
         k.anchor("center"),
         k.pos(30,-10),
-    ])
+    ]);
     return sonic;
 }
