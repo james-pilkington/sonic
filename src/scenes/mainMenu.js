@@ -1,4 +1,6 @@
 import { makeSonic } from "../entities/sonic";
+import { makeBox } from "../entities/box";
+import { makeRobotnik } from "../entities/robotnik";
 import k from "../kaplayCtx"
 
 export default function mainMenu() {
@@ -31,7 +33,20 @@ k.add([
 ]);
 
 makeSonic(k.vec2(200,745));
+//makeBox(k.vec2(500,780));
 
+const spawnRobotnik = () => {
+    const motobug = makeRobotnik(k.vec2(1950,300));
+    motobug.onUpdate(() => {
+        motobug.move(-(2000), 0);
+    });
+    motobug.onExitScreen(() => {
+        if(motobug.pos.x < 0) k.destroy(motobug);
+    });
+const waitTime = k.rand(2,7)
+k.wait(waitTime, spawnRobotnik)
+}
+spawnRobotnik();
 
 k.onUpdate(() => {
     if (bgPieces[1].pos.x <0) {

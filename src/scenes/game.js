@@ -1,6 +1,9 @@
 import { makeSonic } from "../entities/sonic";
 import { makeMotobug } from "../entities/motobug";
 import { makeRing } from "../entities/ring";
+import { makeRobotnik } from "../entities/robotnik";
+import { makeBox } from "../entities/box";
+import { makeShield } from "../entities/shield"
 import k from "../kaplayCtx";
 export default function game () {
     k.setGravity(3100);
@@ -20,6 +23,7 @@ const citySfx = k.play("city", {volume: 0.2,loop: true});
 
     let score = 0;
     let scoreMultiplier = 0;
+    let shieldActive = false;
 
     //const controlsText = 
     const scoreText = k.add([
@@ -48,10 +52,44 @@ sonic.onCollide("enemy", (enemy) => {
           });
         return;
     }
-
+    else if (shieldActive) {
+        shieldActive=false;
+        k.destroyAll("shield");
+        return;
+    }
+    else {
     k.play("hurt", {volume:0.5});
     k.setData("current-score",score);
-    k.go("gameover", citySfx);
+    k.go("gameover", citySfx);}
+})
+
+sonic.onCollide("robotnik", (enemy) => {
+    if (!sonic.isGrounded()) {
+        k.play("destroy", {volume: 0.5});
+        k.play("hyper-ring", {volume:0.5});
+        k.destroy(enemy);
+        sonic.play("jump");
+        sonic.jump();
+        scoreMultiplier+=1;
+        score += 100 *scoreMultiplier
+        scoreText.text =  `SCORE : ${score}`;
+        if (scoreMultiplier === 1)
+            sonic.ringCollectUI.text = `+${100 * scoreMultiplier}`;
+          if (scoreMultiplier > 1) sonic.ringCollectUI.text = `x${scoreMultiplier}`;
+          k.wait(1, () => {
+            sonic.ringCollectUI.text = "";
+          });
+        return;
+    }
+    else if (shieldActive) {
+        shieldActive=false;
+        destroyAll("shield");
+        return;
+    }
+    else {
+    k.play("hurt", {volume:0.5});
+    k.setData("current-score",score);
+    k.go("gameover", citySfx);}
 })
 
 sonic.onCollide("ring", (ring) => {
@@ -61,6 +99,24 @@ sonic.onCollide("ring", (ring) => {
     scoreText.text =  `SCORE : ${score}`;
     sonic.ringCollectUI.text = "+1";
     k.wait(1, () => sonic.ringCollectUI.text = "");
+})
+
+sonic.onCollide("box", (box) => {
+    if (!sonic.isGrounded()) {
+        k.play("destroy", {volume: 0.5});
+        k.destroy(box);
+        sonic.play("jump");
+        sonic.jump();
+        shieldActive = true;
+
+        const shield = makeShield(sonic.pos);
+        shield.onUpdate(() => {
+            shield.pos = sonic.pos
+        });
+        
+        
+        return;
+    }
 })
 
 
@@ -87,6 +143,19 @@ sonic.onCollide("ring", (ring) => {
     }
     spawnMotoBug();
 
+    const spawnRobotnik = () => {
+        const robotnik = makeRobotnik(k.vec2(1950,300));
+        robotnik.onUpdate(() => {
+            robotnik.move(-(gameSpeed), 0);
+        });
+        robotnik.onExitScreen(() => {
+            if(robotnik.pos.x < 0) k.destroy(robotnik);
+        });
+    const waitTime = k.rand(2,7)
+    k.wait(waitTime, spawnRobotnik)
+    }
+    spawnRobotnik();
+
     const spawnRing = () => {
         const ring = makeRing(k.vec2(1950, 745));
         ring.onUpdate(() => {
@@ -102,6 +171,23 @@ sonic.onCollide("ring", (ring) => {
       };
     
       spawnRing();
+
+
+      const spawnBox = () => {
+        const box = makeBox(k.vec2(1950, 780));
+        box.onUpdate(() => {
+            box.move(-gameSpeed, 0);
+        });
+        box.onExitScreen(() => {
+          if (box.pos.x < 0) k.destroy(box);
+        });
+    
+        const waitTime = k.rand(10, 15);
+    
+        k.wait(waitTime, spawnBox);
+      };
+    
+      spawnBox();
 
 k.add([
     k.rect(1920,300),

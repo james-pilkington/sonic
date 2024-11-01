@@ -28,6 +28,30 @@ k.loadSprite("motobug", "graphics/motobug.png",{
         run: {from: 0, to: 4, loop: true, speed: 8},
     },
 });
+k.loadSprite("robotnik", "graphics/robotnik.png",{
+    sliceX:7,
+    sliceY:1,
+    anims: {
+        run: {from: 0, to: 6, loop: true, speed: 8},
+    },
+});
+
+k.loadSprite("shield", "graphics/shield2.png",{
+    sliceX:3,
+    sliceY:1,
+    anims: {
+        spin: {from: 0, to: 2, loop: true, speed: 8},
+    },
+});
+
+k.loadSprite("box", "graphics/box.png",{
+    sliceX:1,
+    sliceY:1,
+    anims: {
+        spin: {from: 0, to: 1, loop: true, speed: 8},
+    },
+});
+
 k.loadFont("mania","fonts/mania.ttf");
 k.loadSound("destroy","sounds/Destroy.wav");
 k.loadSound("hurt","sounds/Hurt.wav");
